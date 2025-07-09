@@ -7,21 +7,22 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
+using namespace std;
 using json = nlohmann::json;
 
 // Callback for handling response
-static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, string* output) {
     size_t totalSize = size * nmemb;
     output->append((char*)contents, totalSize);
     return totalSize;
 }
 
-std::string sendToGemini(const std::string& prompt, const std::string& apiKey) {
+string sendToGemini(const string& prompt, const string& apiKey) {
     CURL* curl = curl_easy_init();
-    std::string response;
+    string response;
 
     if (curl) {
-        std::string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
 
         json body = {
             {"contents", {
@@ -29,7 +30,7 @@ std::string sendToGemini(const std::string& prompt, const std::string& apiKey) {
             }}
         };
 
-        std::string jsonData = body.dump();
+        string jsonData = body.dump();
 
         struct curl_slist* headers = nullptr;
         headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -53,118 +54,118 @@ std::string sendToGemini(const std::string& prompt, const std::string& apiKey) {
 }
 
 int main() {
-    std::string apiKey;
-    std::cout << "Enter your Gemini API key: ";
-    std::getline(std::cin, apiKey);
+    string apiKey;
+    cout << "Enter your Gemini API key: ";
+    getline(cin, apiKey);
 
-    std::cout << "\nWelcome to Gemini CLI Suite!\n";
-    std::cout << "Choose mode:\n1. Chat\n2. Summarize\n3. Email Generator\n4. Resume Reviewer\n5. Code Assistant\n> ";
+    cout << "\nWelcome to Gemini CLI Suite!\n";
+    cout << "Choose mode:\n1. Chat\n2. Summarize\n3. Email Generator\n4. Resume Reviewer\n5. Code Assistant\n> ";
     int mode;
-    std::cin >> mode;
-    std::cin.ignore(); // clear newline
+    cin >> mode;
+    cin.ignore(); // clear newline
 
     if (mode == 1) {
-        std::cout << "\nChat mode started. Type 'exit' to quit.\n";
+        cout << "\nChat mode started. Type 'exit' to quit.\n";
         while (true) {
-            std::string prompt;
-            std::cout << "\nYou: ";
-            std::getline(std::cin, prompt);
+            string prompt;
+            cout << "\nYou: ";
+            getline(cin, prompt);
             if (prompt == "exit") break;
-            std::string reply = sendToGemini(prompt, apiKey);
-            std::cout << "Gemini: " << reply << std::endl;
+            string reply = sendToGemini(prompt, apiKey);
+            cout << "Gemini: " << reply << endl;
         }
 
     } else if (mode == 2) {
-        std::cout << "\nPaste the text to summarize (type 'END' on a new line to finish):\n";
-        std::string line, longText;
-        while (std::getline(std::cin, line)) {
+        cout << "\nPaste the text to summarize (type 'END' on a new line to finish):\n";
+        string line, longText;
+        while (getline(cin, line)) {
             if (line == "END") break;
             longText += line + "\n";
         }
 
-        std::string prompt = "Summarize the following text:\n" + longText;
-        std::string reply = sendToGemini(prompt, apiKey);
+        string prompt = "Summarize the following text:\n" + longText;
+        string reply = sendToGemini(prompt, apiKey);
 
-        std::cout << "\nSummary:\n" << reply << std::endl;
+        cout << "\nSummary:\n" << reply << endl;
 
-        std::ofstream outFile("summary.txt");
+        ofstream outFile("summary.txt");
         if (outFile.is_open()) {
             outFile << reply;
             outFile.close();
-            std::cout << "\n✅ Summary saved to summary.txt\n";
+            cout << "\n✅ Summary saved to summary.txt\n";
         } else {
-            std::cout << "\n⚠️ Could not save summary to file.\n";
+            cout << "\n⚠️ Could not save summary to file.\n";
         }
 
     } else if (mode == 3) {
-        std::string subject, details;
-        std::cout << "\nEnter email subject: ";
-        std::getline(std::cin, subject);
-        std::cout << "Enter details or purpose of the email:\n";
-        std::getline(std::cin, details);
+        string subject, details;
+        cout << "\nEnter email subject: ";
+        getline(cin, subject);
+        cout << "Enter details or purpose of the email:\n";
+        getline(cin, details);
 
-        std::string prompt = "Write a professional email with subject: '" + subject + "'. The details are: " + details;
-        std::string reply = sendToGemini(prompt, apiKey);
+        string prompt = "Write a professional email with subject: '" + subject + "'. The details are: " + details;
+        string reply = sendToGemini(prompt, apiKey);
 
-        std::cout << "\nGenerated Email:\n" << reply << std::endl;
+        cout << "\nGenerated Email:\n" << reply << endl;
 
-        std::ofstream outFile("email.txt");
+        ofstream outFile("email.txt");
         if (outFile.is_open()) {
             outFile << reply;
             outFile.close();
-            std::cout << "\n✅ Email saved to email.txt\n";
+            cout << "\n✅ Email saved to email.txt\n";
         } else {
-            std::cout << "\n⚠️ Could not save email to file.\n";
+            cout << "\n⚠️ Could not save email to file.\n";
         }
 
     } else if (mode == 4) {
-        std::cout << "\nPaste your resume content (type 'END' on a new line to finish):\n";
-        std::string line, resumeText;
-        while (std::getline(std::cin, line)) {
+        cout << "\nPaste your resume content (type 'END' on a new line to finish):\n";
+        string line, resumeText;
+        while (getline(cin, line)) {
             if (line == "END") break;
             resumeText += line + "\n";
         }
 
-        std::string prompt = "Review the following resume and provide constructive feedback and improvement suggestions:\n" + resumeText;
-        std::string reply = sendToGemini(prompt, apiKey);
+        string prompt = "Review the following resume and provide constructive feedback and improvement suggestions:\n" + resumeText;
+        string reply = sendToGemini(prompt, apiKey);
 
-        std::cout << "\nResume Feedback:\n" << reply << std::endl;
+        cout << "\nResume Feedback:\n" << reply << endl;
 
-        std::ofstream outFile("resume_review.txt");
+        ofstream outFile("resume_review.txt");
         if (outFile.is_open()) {
             outFile << reply;
             outFile.close();
-            std::cout << "\n✅ Feedback saved to resume_review.txt\n";
+            cout << "\n✅ Feedback saved to resume_review.txt\n";
         } else {
-            std::cout << "\n⚠️ Could not save feedback to file.\n";
+            cout << "\n⚠️ Could not save feedback to file.\n";
         }
 
     } else if (mode == 5) {
-        std::cout << "\nPaste your code snippet or problem (type 'END' on a new line to finish):\n";
-        std::string line, codeText;
-        while (std::getline(std::cin, line)) {
+        cout << "\nPaste your code snippet or problem (type 'END' on a new line to finish):\n";
+        string line, codeText;
+        while (getline(cin, line)) {
             if (line == "END") break;
             codeText += line + "\n";
         }
 
-        std::string prompt = "Explain or help debug the following code:\n" + codeText;
-        std::string reply = sendToGemini(prompt, apiKey);
+        string prompt = "Explain or help debug the following code:\n" + codeText;
+        string reply = sendToGemini(prompt, apiKey);
 
-        std::cout << "\nCode Assistant Response:\n" << reply << std::endl;
+        cout << "\nCode Assistant Response:\n" << reply << endl;
 
-        std::ofstream outFile("code_assistant.txt");
+        ofstream outFile("code_assistant.txt");
         if (outFile.is_open()) {
             outFile << reply;
             outFile.close();
-            std::cout << "\n✅ Response saved to code_assistant.txt\n";
+            cout << "\n✅ Response saved to code_assistant.txt\n";
         } else {
-            std::cout << "\n⚠️ Could not save response to file.\n";
+            cout << "\n⚠️ Could not save response to file.\n";
         }
 
     } else {
-        std::cout << "\nInvalid option. Exiting.\n";
+        cout << "\nInvalid option. Exiting.\n";
     }
 
-    std::cout << "\nSession ended.\n";
+    cout << "\nSession ended.\n";
     return 0;
 }
